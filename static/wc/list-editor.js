@@ -1,0 +1,185 @@
+class ListEditor extends HTMLElement {
+    // for bootstrap components see: https://getbootstrap.com/docs/5.0/getting-started/introduction/
+    // for bootstrap icons see: https://icons.getbootstrap.com
+    constructor() {
+        super();
+        this.addBtn = null;
+        this.deleteBtn = null;
+        this.listArray = [];
+        this.listComponent = null;
+        this.moveDownBtn = null;
+        this.moveUpBtn = null;
+        this.saveBtn = null;
+        this.selectedIndex = 0;
+        this.undoBtn = null;
+        this.updateBtn = null;
+    }
+
+    connectedCallback() {
+        console.log("connectedCallback");
+
+        this.innerHTML =
+            `
+<style> 
+  @import url('static/css/bootstrap.min.css');
+  @import url('static/img/bootstrap-icons.css');
+</style>
+<style>
+  #listEditorContainer {
+    margin-top: 10%;
+  }
+  #listEditorTitle {
+    color: blue;
+  }
+  #itemInput {
+    width: 100%;
+  }
+</style>
+        <div id="listEditorContainer" class="container container-fluid">
+            <div class="row p-1">
+                <div class="col col-2">
+                </div>
+                <div class="col col-8">
+                <h6 id="listEditorTitle">${this.title}</h6>
+                <ol id="listEditorItems" class="list-group  list-group-numbered">
+                      <li class="list-group-item" contentEditable="true">A first item</li>
+                      <li class="list-group-item active">A second item</li>
+                      <li class="list-group-item">A third item</li>
+                      <li class="list-group-item">A fourth item</li>
+                      <li class="list-group-item">And a fifth one</li>
+                    </ol>
+                </div>
+                <div class="col col-2">
+                </div>
+            </div>
+            <hr/>
+            <div class="row p-1">
+                <div class="col col-2"></div>
+                <div class="col col-6">                    
+                    <input id="itemInput" type="text" class="form-control" placeholder="Item" aria-label="Item"></input>
+                </div>
+                <div class="col col-4">
+                    <button id="addBtn" type="button" class="btn btn-primary">Update</button>
+                    <button id="updateBtn" type="button" class="btn btn-primary">Add</button>
+                </div>
+            </div>
+            <div class="row p-1">
+                <div class="col col-2"></div>
+                <div class="col col-8">
+                        <button id="saveBtn" type="button" class="btn btn-primary"><i class="bi-save" style="color: white;"></i></button>
+                        <button id="undoBtn" type="button" class="btn btn-warning"><i class="bi-arrow-counterclockwise" style="color: black;"></i></button>
+                        <button id="deleteBtn" type="button" class="btn btn-danger"><i class="bi-trash" style="color: white;"></i></button>
+                        <button id="moveUpBtn" type="button" class="btn btn-primary"><i class="bi-arrow-up" style="color: white;"></i></button>
+                        <button id="moveDownBtn" type="button" class="btn btn-primary"><i class="bi-arrow-down" style="color: white;"></i></button>
+                </div>
+                <div class="col col-2"></div>
+            </div>                
+        </div>
+`;
+        this.addBtn = this.querySelector("#addBtn");
+        this.deleteBtn = this.querySelector("#deleteBtn");
+        this.listComponent = this.querySelector("#listEditorItems");
+        this.moveDownBtn = this.querySelector("#moveDownBtn");
+        this.moveUpBtn = this.querySelector("#moveUpBtn");
+        this.saveBtn = this.querySelector("#saveBtn");
+        this.undoBtn = this.querySelector("#undoBtn");
+        this.updateBtn = this.querySelector("#updateBtn");
+
+        this.addBtn.addEventListener('click', () => this.handleAddClick());
+        this.listComponent.addEventListener('click', (ev) => this.handleListClick(ev));
+        this.moveDownBtn.addEventListener('click', () => this.handleMoveDownClick());
+        this.moveUpBtn.addEventListener('click', () => this.handleMoveUpClick());
+        this.saveBtn.addEventListener('click', () => this.handleSaveClick());
+        this.undoBtn.addEventListener('click', () => this.handleUndoClick());
+        this.updateBtn.addEventListener('click', () => this.handleUpdateClick());
+    }
+    // for every event handler added above, below remove it
+    disconnectedCallback() {
+        this.addBtn.removeEventListener('click', () => this.handleAddClick());
+        this.deleteBtn.removeEventListener('click', () => this.handleDeleteClick());
+        this.listComponent.removeEventListener('click', (ev) => this.handleListClick(ev));
+        this.moveDownBtn.removeEventListener('click', () => this.handleMoveDownClick());
+        this.moveUpBtn.removeEventListener('click', () => this.handleMoveUpClick());
+        this.saveBtn.removeEventListener('click', () => this.handleSaveClick());
+        this.undoBtn.removeEventListener('click', () => this.handleUndoClick());
+        this.updateBtn.removeEventListener('click', () => this.handleUpdateClick());
+    }
+
+    handleAddClick() {
+        alert("add clicked");
+    }
+
+    handleDeleteClick() {
+        alert("delete clicked");
+    }
+
+    handleListClick(ev) {
+        alert("list clicked");
+    }
+    handleMoveDownClick() {
+        alert("move down clicked");
+    }
+    handleMoveUpClick() {
+        alert("move up clicked");
+    }
+    handleSaveClick() {
+        alert("save clicked");
+    }
+    handleUndoClick() {
+        alert("undo clicked");
+    }
+    handleUpdateClick() {
+        alert("update clicked");
+    }
+
+    renderList() {
+        // add code to populate the list from this.arrayList
+        // enable / disable buttons
+        this.toggleButtons();
+    }
+
+    toggleButtons() {
+
+    }
+    static get observedAttributes() {
+        return ['items'];
+    }
+
+    attributeChangedCallback(name, oldVal, newVal) {
+        console.log(`Attribute: ${name} changed from ${oldVal} to ${newVal}!`);
+        switch (name) {
+            case "list": {
+                if (oldVal && oldVal != null && oldVal != newVal) {
+                    this.listArray = JSON.parse(newVal);
+                    this.renderList();
+                }
+                break;
+            }
+            case "title": {
+                if (oldVal && oldVal != null && oldVal != newVal) {
+                    this.querySelector("#listEditorTitle").innerText = newVal;
+                }
+                break;
+            }
+        }
+    }
+
+    adoptedCallback() {
+    }
+    get items() {
+        return this.getAttribute("items");
+    }
+    set items(items) {
+        this.setAttribute("items", value);
+    }
+
+    get title() {
+        return this.getAttribute("title");
+    }
+    set title(value) {
+        this.setAttribute("title", value);
+    }
+
+}
+
+window.customElements.define('list-editor', ListEditor);

@@ -1,0 +1,97 @@
+body {
+    background-color: #FBF0D9;
+}
+.doxa-home-page {
+    margin-top: 10vh;
+}
+
+@media only screen and (min-width: 1000px) {
+    .fixed-top {
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 0;
+        z-index: 1030;
+        height: 80px;
+    }
+}
+.doxa-navbar {
+}
+.navbar-nav {
+    padding-right: 200px;
+}
+.app-brand {
+    font-style: italic !important;
+    color: gold !important;
+    padding-left: 1vw !important;
+}
+.card-home {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    text-align: center;
+}
+.card-home-ico {
+}
+.content {
+    margin-bottom: 10rem;
+}
+.ide {
+    display: flex;
+
+    /* Misc */
+    border: 1px solid #cbd5e0;
+    height: 100%;
+    width: 100%;
+}
+.resizer[data-direction='horizontal'] {
+    background-color: #cbd5e0;
+    cursor: ew-resize;
+    height: 100%;
+    width: 2px;
+}
+.resizer[data-direction='vertical'] {
+    background-color: #cbd5e0;
+    cursor: ns-resize;
+    height: 2px;
+    width: 100%;
+}
+.container__left {
+    /* Initial length of left iframe */
+    width: 50%;
+
+    /* Misc */
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+.container__right {
+    padding-top: 6vh;
+    /* Take the remaining width */
+    flex: 1;
+
+    /* Misc */
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.container__top {
+    /* Initial height of right top iframe */
+    height: 50%;
+
+    /* Misc */
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    width: 100% !important;
+}
+.container__bottom {
+    /* Take the remaining height for the right bottom iframe */
+    flex: 1;
+
+    /* Misc */
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    width: 100% !important;
+}
