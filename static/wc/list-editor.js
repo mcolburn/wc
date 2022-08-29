@@ -3,9 +3,11 @@ class ListEditor extends HTMLElement {
     // for bootstrap icons see: https://icons.getbootstrap.com
     constructor() {
         super();
+        console.log("constructor");
         this.addBtn = null;
         this.deleteBtn = null;
         this.listArray = [];
+        this.changes = [];
         this.listComponent = null;
         this.moveDownBtn = null;
         this.moveUpBtn = null;
@@ -17,7 +19,6 @@ class ListEditor extends HTMLElement {
 
     connectedCallback() {
         console.log("connectedCallback");
-
         this.innerHTML =
             `
 <style> 
@@ -42,12 +43,7 @@ class ListEditor extends HTMLElement {
                 <div class="col col-8">
                 <h6 id="listEditorTitle">${this.title}</h6>
                 <ol id="listEditorItems" class="list-group  list-group-numbered">
-                      <li class="list-group-item" contentEditable="true">A first item</li>
-                      <li class="list-group-item active">A second item</li>
-                      <li class="list-group-item">A third item</li>
-                      <li class="list-group-item">A fourth item</li>
-                      <li class="list-group-item">And a fifth one</li>
-                    </ol>
+                </ol>
                 </div>
                 <div class="col col-2">
                 </div>
@@ -92,6 +88,10 @@ class ListEditor extends HTMLElement {
         this.saveBtn.addEventListener('click', () => this.handleSaveClick());
         this.undoBtn.addEventListener('click', () => this.handleUndoClick());
         this.updateBtn.addEventListener('click', () => this.handleUpdateClick());
+        if (this.items) {
+            this.listArray = JSON.parse(this.items);
+            this.renderList();
+        }
     }
     // for every event handler added above, below remove it
     disconnectedCallback() {
@@ -135,6 +135,18 @@ class ListEditor extends HTMLElement {
     renderList() {
         // add code to populate the list from this.arrayList
         // enable / disable buttons
+        if (! this.listComponent) {
+            return;
+        }
+        this.listArray.forEach((item, index) => {
+            const li = document.createElement('li');
+            li.classList.add("list-group-item")
+            if (index === this.selectedIndex) {
+                li.classList.add("active");
+            }
+            li.innerText = item;
+            this.listComponent.appendChild(li);
+        });
         this.toggleButtons();
     }
 
@@ -148,15 +160,15 @@ class ListEditor extends HTMLElement {
     attributeChangedCallback(name, oldVal, newVal) {
         console.log(`Attribute: ${name} changed from ${oldVal} to ${newVal}!`);
         switch (name) {
-            case "list": {
-                if (oldVal && oldVal != null && oldVal != newVal) {
+            case "items": {
+                if (newVal != null && oldVal != newVal) {
                     this.listArray = JSON.parse(newVal);
                     this.renderList();
                 }
                 break;
             }
             case "title": {
-                if (oldVal && oldVal != null && oldVal != newVal) {
+                if (newVal != null && oldVal != newVal) {
                     this.querySelector("#listEditorTitle").innerText = newVal;
                 }
                 break;
