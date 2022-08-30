@@ -110,7 +110,7 @@ class ListEditor extends HTMLElement {
         const newItemInput = this.itemInput.value;
         this.listArray.push(newItemInput);
         alert("added" + newItemInput);
-        this.renderItem(newItemInput, this.listArray.length - 1);
+        this.AddItem(newItemInput, this.listArray.length - 1);
     }
 
     handleDeleteClick() {
@@ -159,21 +159,26 @@ class ListEditor extends HTMLElement {
     //     this.toggleButtons();
     // }
 
+    addItem(item, index) {
+        const li = document.createElement('li');
+        li.classList.add("list-group-item")
+        if (index === this.selectedIndex) {
+            li.classList.add("active");
+        }
+        li.innerText = item;
+        this.listComponent.appendChild(li);
+    }
     renderList() {
         // add code to populate the list from this.arrayList
         // enable / disable buttons
         if (! this.listComponent) {
             return;
         }
+        // clear the list element
+        this.listComponent.innerHTML = "";
         if (this.listComponent)
         this.listArray.forEach((item, index) => {
-            const li = document.createElement('li');
-            li.classList.add("list-group-item")
-            if (index === this.selectedIndex) {
-                li.classList.add("active");
-            }
-            li.innerText = item;
-            this.listComponent.appendChild(li);
+            this.addItem(item, index);
         });
         this.toggleButtons();
     }
