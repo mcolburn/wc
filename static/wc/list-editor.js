@@ -55,8 +55,8 @@ class ListEditor extends HTMLElement {
                     <input id="itemInput" type="text" class="form-control" placeholder="Item" aria-label="Item"></input>
                 </div>
                 <div class="col col-4">
-                    <button id="addBtn" type="button" class="btn btn-primary">Update</button>
-                    <button id="updateBtn" type="button" class="btn btn-primary">Add</button>
+                    <button id="updateBtn" type="button" class="btn btn-primary">Update</button>
+                    <button id="addBtn" type="button" class="btn btn-primary">Add</button>
                 </div>
             </div>
             <div class="row p-1">
@@ -80,6 +80,7 @@ class ListEditor extends HTMLElement {
         this.saveBtn = this.querySelector("#saveBtn");
         this.undoBtn = this.querySelector("#undoBtn");
         this.updateBtn = this.querySelector("#updateBtn");
+        this.itemInput = this.querySelector("#itemInput");
 
         this.addBtn.addEventListener('click', () => this.handleAddClick());
         this.listComponent.addEventListener('click', (ev) => this.handleListClick(ev));
@@ -106,7 +107,10 @@ class ListEditor extends HTMLElement {
     }
 
     handleAddClick() {
-        alert("add clicked");
+        const newItemInput = this.itemInput.value;
+        this.listArray.push(newItemInput);
+        alert("added" + newItemInput);
+        this.renderItem(newItemInput, this.listArray.length - 1);
     }
 
     handleDeleteClick() {
@@ -132,12 +136,36 @@ class ListEditor extends HTMLElement {
         alert("update clicked");
     }
 
+    // renderItem(item, index) {
+    //     const itm = document.createElement('itm');
+    //     itm.classList.add("list-group-item");
+    //     itm.innerText = item;
+    //     if (index === this.selectedIndex) {
+    //         itm.classList.add("active");
+    //     }
+    //     this.listComponent.appendChild(itm);
+    // }
+    //
+    // renderList() {
+    //     // add code to populate the list from this.arrayList
+    //     // enable / disable buttons
+    //     if (! this.listComponent) {
+    //         return;
+    //     }
+    //     if (this.listComponent)
+    //         this.listArray.forEach((item, index) => {
+    //             this.renderItem(item, index);
+    //         });
+    //     this.toggleButtons();
+    // }
+
     renderList() {
         // add code to populate the list from this.arrayList
         // enable / disable buttons
         if (! this.listComponent) {
             return;
         }
+        if (this.listComponent)
         this.listArray.forEach((item, index) => {
             const li = document.createElement('li');
             li.classList.add("list-group-item")
@@ -181,7 +209,7 @@ class ListEditor extends HTMLElement {
     get items() {
         return this.getAttribute("items");
     }
-    set items(items) {
+    set items(value) {
         this.setAttribute("items", value);
     }
 
