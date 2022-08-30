@@ -87,6 +87,7 @@ class ListEditor extends HTMLElement {
         this.moveDownBtn.addEventListener('click', () => this.handleMoveDownClick());
         this.moveUpBtn.addEventListener('click', () => this.handleMoveUpClick());
         this.saveBtn.addEventListener('click', () => this.handleSaveClick());
+        this.deleteBtn.addEventListener('click', () => this.handleDeleteClick());
         this.undoBtn.addEventListener('click', () => this.handleUndoClick());
         this.updateBtn.addEventListener('click', () => this.handleUpdateClick());
         if (this.items) {
@@ -109,8 +110,9 @@ class ListEditor extends HTMLElement {
     handleAddClick() {
         const newItemInput = this.itemInput.value;
         this.listArray.push(newItemInput);
-        alert("added" + newItemInput);
-        this.AddItem(newItemInput, this.listArray.length - 1);
+        alert("added " + newItemInput);
+        this.renderItem(newItemInput, this.listArray.length - 1);
+        this.itemInput.value = "";          //Empty text box
     }
 
     handleDeleteClick() {
@@ -136,50 +138,27 @@ class ListEditor extends HTMLElement {
         alert("update clicked");
     }
 
-    // renderItem(item, index) {
-    //     const itm = document.createElement('itm');
-    //     itm.classList.add("list-group-item");
-    //     itm.innerText = item;
-    //     if (index === this.selectedIndex) {
-    //         itm.classList.add("active");
-    //     }
-    //     this.listComponent.appendChild(itm);
-    // }
-    //
-    // renderList() {
-    //     // add code to populate the list from this.arrayList
-    //     // enable / disable buttons
-    //     if (! this.listComponent) {
-    //         return;
-    //     }
-    //     if (this.listComponent)
-    //         this.listArray.forEach((item, index) => {
-    //             this.renderItem(item, index);
-    //         });
-    //     this.toggleButtons();
-    // }
-
-    addItem(item, index) {
-        const li = document.createElement('li');
-        li.classList.add("list-group-item")
+    renderItem(item, index) {
+        const itm = document.createElement('li');
+        itm.classList.add("list-group-item");
+        itm.innerText = item;
         if (index === this.selectedIndex) {
-            li.classList.add("active");
+            itm.classList.add("active");
         }
-        li.innerText = item;
-        this.listComponent.appendChild(li);
+        this.listComponent.appendChild(itm);
     }
+
     renderList() {
         // add code to populate the list from this.arrayList
         // enable / disable buttons
         if (! this.listComponent) {
             return;
         }
-        // clear the list element
         this.listComponent.innerHTML = "";
         if (this.listComponent)
-        this.listArray.forEach((item, index) => {
-            this.addItem(item, index);
-        });
+            this.listArray.forEach((item, index) => {
+                this.renderItem(item, index);
+            });
         this.toggleButtons();
     }
 
