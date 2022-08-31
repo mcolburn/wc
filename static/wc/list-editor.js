@@ -81,6 +81,7 @@ class ListEditor extends HTMLElement {
         this.undoBtn = this.querySelector("#undoBtn");
         this.updateBtn = this.querySelector("#updateBtn");
         this.itemInput = this.querySelector("#itemInput");
+        const listEl = document.getElementsByClassName("list-group-item");
 
         this.addBtn.addEventListener('click', () => this.handleAddClick());
         this.listComponent.addEventListener('click', (ev) => this.handleListClick(ev));
@@ -110,17 +111,24 @@ class ListEditor extends HTMLElement {
     handleAddClick() {
         const newItemInput = this.itemInput.value;
         this.listArray.push(newItemInput);
-        alert("added " + newItemInput);
         this.renderItem(newItemInput, this.listArray.length - 1);
         this.itemInput.value = "";          //Empty text box
     }
 
     handleDeleteClick() {
-        alert("delete clicked");
+        const listElements = this.listComponent.children;
+        for (let i = 0; i < listElements.length; i++) {
+            if (listElements[i].classList.contains("active")) {
+                this.listArray.splice(i, 1);
+                this.listComponent.removeChild(listElements[i]);
+                this.renderList();
+            }
+        }
     }
 
     handleListClick(ev) {
-        alert("list clicked");
+        this.deselectEachListElement(); //To keep only one list element selected at a time, first reset them all
+        ev.target.classList.add("active");
     }
     handleMoveDownClick() {
         alert("move down clicked");
@@ -136,6 +144,13 @@ class ListEditor extends HTMLElement {
     }
     handleUpdateClick() {
         alert("update clicked");
+    }
+
+    deselectEachListElement() {
+        const listElements = this.listComponent.children;
+        for (let i = 0; i < listElements.length; i++) {
+            listElements[i].classList.remove("active");
+        }
     }
 
     renderItem(item, index) {
