@@ -110,26 +110,30 @@ class ListEditor extends HTMLElement {
 
     handleAddClick() {
         const newItemInput = this.itemInput.value;
-        this.listArray.push(newItemInput);
-        this.renderItem(newItemInput, this.listArray.length - 1);
-        this.itemInput.value = "";          //Empty text box
-    }
-
-    handleDeleteClick() {
-        const listElements = this.listComponent.children;
-        for (let i = 0; i < listElements.length; i++) {
-            if (listElements[i].classList.contains("active")) {
-                this.listArray.splice(i, 1);
-                this.listComponent.removeChild(listElements[i]);
-                this.renderList();
-            }
+        if (!this.isDuplicate(newItemInput)) {
+            this.listArray.push(newItemInput);
+            this.renderItem(newItemInput, this.listArray.length - 1);
+        } else {
+            alert("Please enter a unique name");
         }
     }
 
-    handleListClick(ev) {
-        this.deselectEachListElement(); //To keep only one list element selected at a time, first reset them all
-        ev.target.classList.add("active");
+    handleDeleteClick() {
+        this.listArray.splice(this.selectedIndex, 1); // Remove the selected item from the listArray
+        this.renderList();
     }
+
+    handleListClick(ev) {
+        this.deselectEachListElement(); // To keep only one list element selected at a time, first reset them all
+        ev.target.classList.add("active");
+        this.listArray.forEach((item, index) => { // Set selectedIndex to the index of the new selected item
+            if (ev.target.innerText === item) {
+                this.selectedIndex = index;
+            }
+        });
+        this.itemInput.value = ev.target.innerText; // Display the content of the selected list item in the input box
+    }
+
     handleMoveDownClick() {
         alert("move down clicked");
     }
@@ -143,7 +147,13 @@ class ListEditor extends HTMLElement {
         alert("undo clicked");
     }
     handleUpdateClick() {
-        alert("update clicked");
+        if (!this.isDuplicate(this.itemInput.value)) {
+            this.listArray[this.selectedIndex] = this.itemInput.value;
+            this.renderList()
+        }
+        else if (this.listArray[this.selectedIndex] != this.itemInput.value) {
+            alert("List items cannot have duplicate names")
+        }
     }
 
     deselectEachListElement() {
@@ -151,6 +161,16 @@ class ListEditor extends HTMLElement {
         for (let i = 0; i < listElements.length; i++) {
             listElements[i].classList.remove("active");
         }
+    }
+
+    isDuplicate(newName) {
+        let duplicate = false;
+        this.listArray.forEach((item, index) => {
+           if (newName === item) {
+               duplicate = true;
+           }
+        });
+        return duplicate;
     }
 
     renderItem(item, index) {
