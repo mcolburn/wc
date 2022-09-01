@@ -112,7 +112,10 @@ class ListEditor extends HTMLElement {
         const newItemInput = this.itemInput.value;
         if (!this.isDuplicate(newItemInput)) {
             this.listArray.push(newItemInput);
+            this.deselectEachListElement();
+            this.selectedIndex = this.listArray.length - 1; // Set the selected index to the added item to it is rendered as active
             this.renderItem(newItemInput, this.listArray.length - 1);
+            this.itemInput.value = this.listArray[this.selectedIndex];
         } else {
             alert("Please enter a unique name");
         }
@@ -135,10 +138,33 @@ class ListEditor extends HTMLElement {
     }
 
     handleMoveDownClick() {
-        alert("move down clicked");
+        //alert("move down clicked");
+        if (this.selectedIndex !== this.listArray.length - 1) { // If the item is not at the end of the list...
+            let tempNextItem = this.listArray[this.selectedIndex + 1]
+            this.listArray[this.selectedIndex + 1] = this.listArray[this.selectedIndex];
+            this.listArray[this.selectedIndex] = tempNextItem;
+            this.selectedIndex += 1;
+        } else { // If it is, swap the first and last items
+            let tempFirstItem = this.listArray[0];
+            this.listArray[0] = this.listArray[this.selectedIndex];
+            this.listArray[this.selectedIndex] = tempFirstItem;
+            this.selectedIndex = 0;
+        }
+        this.renderList();
     }
     handleMoveUpClick() {
-        alert("move up clicked");
+        if (this.selectedIndex !== 0) {
+            let tempItemAbove = this.listArray[this.selectedIndex - 1]
+            this.listArray[this.selectedIndex - 1] = this.listArray[this.selectedIndex];
+            this.listArray[this.selectedIndex] = tempItemAbove;
+            this.selectedIndex -= 1;
+        } else {
+            let tempLastItem = this.listArray[this.listArray.length - 1];
+            this.listArray[this.listArray.length - 1] = this.listArray[this.selectedIndex];
+            this.listArray[this.selectedIndex] = tempLastItem;
+            this.selectedIndex = this.listArray.length - 1;
+        }
+        this.renderList();
     }
     handleSaveClick() {
         alert("save clicked");
@@ -151,7 +177,7 @@ class ListEditor extends HTMLElement {
             this.listArray[this.selectedIndex] = this.itemInput.value;
             this.renderList()
         }
-        else if (this.listArray[this.selectedIndex] != this.itemInput.value) {
+        else if (this.listArray[this.selectedIndex] !== this.itemInput.value) {
             alert("List items cannot have duplicate names")
         }
     }
