@@ -7,7 +7,7 @@ class ListEditor extends HTMLElement {
         this.addBtn = null;
         this.deleteBtn = null;
         this.listArray = [];
-        this.changes = [];
+        this.savedListArray = [];
         this.listComponent = null;
         this.moveDownBtn = null;
         this.moveUpBtn = null;
@@ -93,6 +93,8 @@ class ListEditor extends HTMLElement {
         this.updateBtn.addEventListener('click', () => this.handleUpdateClick());
         if (this.items) {
             this.listArray = JSON.parse(this.items);
+            this.savedListArray = Array.from(this.listArray);
+            this.itemInput.value = this.listArray[this.selectedIndex];
             this.renderList();
         }
     }
@@ -110,12 +112,13 @@ class ListEditor extends HTMLElement {
 
     handleAddClick() {
         const newItemInput = this.itemInput.value;
-        if (!this.isDuplicate(newItemInput)) {
+        if (!this.isItemDuplicate(newItemInput)) {
             this.listArray.push(newItemInput);
             this.deselectEachListElement();
             this.selectedIndex = this.listArray.length - 1; // Set the selected index to the added item to it is rendered as active
             this.renderItem(newItemInput, this.listArray.length - 1);
-            this.itemInput.value = this.listArray[this.selectedIndex];
+            this.setInputFieldToSelectedItemValue();
+            this.toggleButtons();
         } else {
             alert("Please enter a unique name");
         }
@@ -123,6 +126,7 @@ class ListEditor extends HTMLElement {
 
     handleDeleteClick() {
         this.listArray.splice(this.selectedIndex, 1); // Remove the selected item from the listArray
+        this.selectedIndex = 0;
         this.renderList();
     }
 
@@ -134,7 +138,7 @@ class ListEditor extends HTMLElement {
                 this.selectedIndex = index;
             }
         });
-        this.itemInput.value = ev.target.innerText; // Display the content of the selected list item in the input box
+        this.setInputFieldToSelectedItemValue();
     }
 
     handleMoveDownClick() {
@@ -167,19 +171,26 @@ class ListEditor extends HTMLElement {
         this.renderList();
     }
     handleSaveClick() {
-        alert("save clicked");
+        this.savedListArray = Array.from(this.listArray);
     }
     handleUndoClick() {
-        alert("undo clicked");
+        this.listArray = Array.from(this.savedListArray);
+        this.selectedIndex = 0;
+        this.setInputFieldToSelectedItemValue();
+        this.renderList();
     }
     handleUpdateClick() {
-        if (!this.isDuplicate(this.itemInput.value)) {
+        if (!this.isItemDuplicate(this.itemInput.value)) {
             this.listArray[this.selectedIndex] = this.itemInput.value;
             this.renderList()
         }
         else if (this.listArray[this.selectedIndex] !== this.itemInput.value) {
             alert("List items cannot have duplicate names")
         }
+    }
+
+    setInputFieldToSelectedItemValue() {
+        this.itemInput.value = this.listArray[this.selectedIndex];
     }
 
     deselectEachListElement() {
@@ -189,7 +200,7 @@ class ListEditor extends HTMLElement {
         }
     }
 
-    isDuplicate(newName) {
+    isItemDuplicate(newName) {
         let duplicate = false;
         this.listArray.forEach((item, index) => {
            if (newName === item) {
@@ -197,6 +208,20 @@ class ListEditor extends HTMLElement {
            }
         });
         return duplicate;
+    }
+
+    areEqualArrays(array1, array2) {
+        let equal = true;
+        if (array1.length === array2.length) {
+            array1.forEach((item, index) => {
+               if (item !== array2[index]) {
+                   equal = false;
+               }
+            });
+        } else {
+            equal = false;
+        }
+        return equal;
     }
 
     renderItem(item, index) {
@@ -224,8 +249,15 @@ class ListEditor extends HTMLElement {
     }
 
     toggleButtons() {
-
+        if (this.areEqualArrays(this.listArray, this.savedListArray)) {                    // Toggle the undo and save buttons
+            this.undoBtn.setAttribute("disabled", "true");
+            this.saveBtn.setAttribute("disabled", "true");
+        } else {
+            this.undoBtn.removeAttribute("disabled");
+            this.saveBtn.removeAttribute("disabled");
+        }
     }
+
     static get observedAttributes() {
         return ['items'];
     }
@@ -234,14 +266,14 @@ class ListEditor extends HTMLElement {
         console.log(`Attribute: ${name} changed from ${oldVal} to ${newVal}!`);
         switch (name) {
             case "items": {
-                if (newVal != null && oldVal != newVal) {
+                if (newVal != null && oldVal !== newVal) {
                     this.listArray = JSON.parse(newVal);
                     this.renderList();
                 }
                 break;
             }
             case "title": {
-                if (newVal != null && oldVal != newVal) {
+                if (newVal != null && oldVal !== newVal) {
                     this.querySelector("#listEditorTitle").innerText = newVal;
                 }
                 break;
